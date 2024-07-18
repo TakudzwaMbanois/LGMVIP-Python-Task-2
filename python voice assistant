@@ -1,74 +1,169 @@
+mport tkinter as tk
 
-import speech_recognition as sr
-import pyttsx3
-from datetime import datetime
+from pygame.locals import *
+import psutil 
 
-recognizer = sr.Recognizer()
-tts_engine = pyttsx3.init()
 
-def speak(text):
+
+root=tk.Tk()
+import random
+
+
+root.title("sisccos")
+score=0
+playerpoints=0
+computerpoints=0
+choice1=''
+choicee=''
+choices=["rock","paper","scissors"]
+
+def start():
+    button0.config(state=tk.DISABLED)
+    label4.config(text="welcome to the game")
+    computer()
+    final()
+
   
-    tts_engine.say(text)
-    tts_engine.runAndWait()
+def clear_entry(event):
 
-def listen():
+    entry.delete(0, tk.END)
+
+
+def on_enter(event):
+    event.widget.config(bg='lightblue')  
+
+def on_leave(event):
+    event.widget.config(bg='SystemButtonFace')
    
-    with sr.Microphone() as source:
-        print("Listen.")
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
-        
-        try:
-            print("Recog")
-            command = recognizer.recognize_google(audio)
-            print(f"You said: {command}")
-            return command.lower()
-        except sr.UnknownValueError:
-            print("Sorry,, not understand that.")
-            return None
-        except sr.RequestError:
-            print("Could not request results.")
-            return None
+def rock():
+    global choice1
 
-def handle_command(command):
 
-    if command is None:
-        speak("Sorry  did not understand that.")
-        return True
+
+    choice1 = "rock"
+    final()
+
+
+def get_battery_percentage():
+    battery = psutil.sensors_battery()
+    if battery is None:
+        return "Battery not found"
+    plugged = battery.power_plugged
+    percent = battery.percent
+    label7=tk.Label(root)
+    label7.config(text=percent)
+    label7.pack()
+
+
     
-    if "hello" in command:
-        speak("Hello, How can I help you today?")
-    elif "your name" in command:
-        speak("I am your voice assistant.")
-    elif "time" in command:
-        now = datetime.now().strftime("%H:%M")
-        speak(f"The current time is {now}")
-    elif "exit" in command:
-        speak("Goodbye!")
-        return False
-    elif "hungry" in command:
-        speak("Go and cook something.")
-    elif "sad" in command:
-        speak("What's troubling you?")
-    elif "exams" in command:
-        speak("Go and study.")
-    elif "who created you" in command:
-        speak("I was created by Takudzwa Mbano, a BCA student.")
-    elif "tell me about him" in command:
-        speak("He is a smart and hardworking student from Zimbabwe.")
+
+def paper():
+    global choice1
+
+    choice1="paper"
+    final()
+
+def scissors():
+    global choice1
+    choice1="scissors"
+    final()
+
+
+
+    
+
+
+def computer():
+    global choicee
+    choicee=random.choice(choices)
+    print("computer chose  ",choicee)
+
+
+def final():
+    global res
+    global playerpoints
+    global computerpoints
+    
+    res=""
+
+    
+    label3.config(text=res)
+    if choice1=='':
+        return
+
+    if choice1 == choicee:
+      
+        res = "It's a tie!"
+    elif (choice1 == "rock" and choicee == "scissors") or \
+         (choice1 == "paper" and choicee == "rock") or \
+         (choice1 == "scissors" and choicee == "paper"):
+         playerpoints+=10
+         Playerpoints.config(text=f"The player results are {playerpoints}") 
+         res = "Player wins!"
     else:
-        speak("Sorry, I don't know how to respond to that.")
+
+        computerpoints+=10
+        Computerpoints.config(text=f"The Computer results are {computerpoints}")
+        res = "Computer wins!"
     
-    return True
 
-def main():
+    label3.config(text=res)
+  
 
-    speak("Voice assistant initialized. How can I help you today?")
     
-    while True:
-        command = listen()
-        if not handle_command(command):
-            break
 
-if __name__ == "__main__":
-    main()
+    
+entry=tk.Entry(root)
+entry.pack(pady=10)
+
+button0=tk.Button(root,text="click here to start",command=start)
+button0.pack()
+
+get_battery_percentage()
+label1=tk.Label(root,text="")
+label1.pack(pady=10)
+label2=tk.Label(root,text="")
+label2.pack(pady=10)
+label3=tk.Label(root, text='')
+label3.pack(pady=10)
+label4=tk.Label(root,text="")
+label4.pack(pady=10)
+
+
+entry.bind("<FocusIn>",clear_entry)
+Playerpoints=tk.Label(root,text="",pady=20)
+Playerpoints.pack()
+Computerpoints=tk.Label(root,text='')
+Computerpoints.pack()
+
+
+
+button2=tk.Button(root,text="showresults",command=lambda: [computer(), final()])
+button2.pack()
+
+Rock=tk.Button(root,text="Rock",command=rock)
+Rock.pack()
+
+Paper=tk.Button(root,text="paper",command=paper)
+Paper.pack()
+
+Scissors=tk.Button(root,text="Scissors",command=scissors)
+Scissors.pack()
+
+Rock.bind("<Enter>",on_enter)
+Rock.bind("<Leave>",on_leave)
+Paper.bind("<Enter>",on_enter)
+Paper.bind("<Leave>",on_leave)
+Scissors.bind("<Enter>",on_enter)
+Scissors.bind("<Leave>",on_leave)
+
+
+    
+
+
+    
+
+root.mainloop()
+
+
+
